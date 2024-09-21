@@ -134,24 +134,25 @@ class HomePage(BoxLayout):
 
         # New Button
         new_button = Button(text='New', size_hint = (0.4, 0.1))
-        new_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}
+        new_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}        
+        new_button.bind(on_press=self.new_entry)
+
         self.add_widget(new_button)
 
         # Scrollable Frame
         scroll_view = ScrollView()
-        #scroll_view = ScrollView(size_hint=(1, None), size=(self.width, 300))
         scroll_layout = GridLayout(cols=1, spacing=10, size_hint_y=None)
         scroll_layout.bind(minimum_height=scroll_layout.setter('height'))
     
 
+        # RUN DATABASE PRE PROCESSING HERE
         for i in range(10):  # Example list entries
-            entry = ItemWidget(f'Item {i+1}', f'{i}', i)
+            entry = ItemWidget('Apple', f'{i}', i)
             scroll_layout.add_widget(entry)
 
         scroll_view.add_widget(scroll_layout)
         self.add_widget(scroll_view)
 
-        
         nav_bar = BoxLayout(orientation='horizontal', size_hint_y=None, height=50)
         
         pantry= Button(background_normal='images/pantry.png')
@@ -162,11 +163,63 @@ class HomePage(BoxLayout):
 
         recipes= Button(size_hint_x=1, width=100, background_normal='images/recipes.png')
         nav_bar.add_widget(recipes)
-
+        
+        scan = Button(size_hint_x=1, width=100, background_normal='images/scan.png')
+        nav_bar.add_widget(scan)
+        
         account= Button(size_hint_x=1, width=100, background_normal='images/account.png')
         nav_bar.add_widget(account)
                 
         self.add_widget(nav_bar)
+
+    def new_entry(self, instance):
+        layout = BoxLayout(orientation='vertical')
+
+        name_input = TextInput(hint_text='Name', multiline=False, padding_y=(20,20),
+                             size_hint=(1, 0.5))
+        layout.add_widget(name_input)
+
+        quantity_input = TextInput(hint_text='Quantity', multiline=False, padding_y=(20,20),
+                             size_hint=(1, 0.5))
+        layout.add_widget(quantity_input)
+
+        expire_input = TextInput(hint_text='Expiration Date (MM/DD/YYYY)', multiline=False, padding_y=(20,20),
+                             size_hint=(1, 0.5))
+        layout.add_widget(expire_input)
+
+        avgCost_input = TextInput(hint_text='Average Cost', multiline=False, padding_y=(20,20),
+                             size_hint=(1, 0.5))
+        layout.add_widget(avgCost_input)
+
+        def add_item(instance):
+            name = name_input.text
+            quantity = quantity_input.text
+            expire_date = datetime.strptime(expire_input.text, '%m/%d/%Y')
+            expire = int(datetime(expire_date.year, expire_date.month, expire_date.day).timestamp())
+            avgCost = float(avgCost_input.text)
+
+            foodId = 00000 # Convert
+            individualID = 000000 # Convert
+            
+            new_item = ItemWidget(name, quantity, foodId, individualID, expire, avgCost)
+            self.children[1].children[0].add_widget(new_item)
+
+            # ADD TO DATABASE
+            popup.dismiss()
+
+
+
+        add_button = Button(text='Add',
+                             size_hint=(1, 0.5))
+        add_button.bind(on_press=add_item)
+        layout.add_widget(add_button)
+
+        popup = Popup(title='New Item',
+              content=layout,
+              size_hint=(0.8, 0.8))
+        popup.open()
+
+        
         
        
 
