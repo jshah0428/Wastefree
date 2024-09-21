@@ -1,7 +1,7 @@
 import sqlite3
 import bcrypt
 import os
-import re  # For regular expressions
+import re
 from kivy.app import App
 from kivy.properties import StringProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
