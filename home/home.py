@@ -123,6 +123,12 @@ class ItemWidget(BoxLayout):
 
 
 # Home Page
+class HomeScreen(Screen):
+    def __init__(self, **kwargs):
+        super(HomeScreen, self).__init__(**kwargs)
+        self.add_widget(HomePage())
+
+
 class HomePage(BoxLayout):
     def __init__(self, **kwargs):
         super(HomePage, self).__init__(**kwargs)
@@ -153,21 +159,24 @@ class HomePage(BoxLayout):
         scroll_view.add_widget(scroll_layout)
         self.add_widget(scroll_view)
 
+
+        # Navigation Bar
         nav_bar = BoxLayout(orientation='horizontal', size_hint_y=None, height=50)
         
-        pantry= Button(background_normal='images/pantry.png')
+        pantry = Button(background_normal='images/pantry.png')
         nav_bar.add_widget(pantry)
 
-        trends= Button(size_hint_x=1, width=100, background_normal='images/trends.png')
+        trends = Button(size_hint_x=1, width=100, background_normal='images/trends.png')
+        trends.bind(on_press=self.switch_to_new_page)
         nav_bar.add_widget(trends)
-
-        recipes= Button(size_hint_x=1, width=100, background_normal='images/recipes.png')
+        
+        recipes = Button(size_hint_x=1, width=100, background_normal='images/recipes.png')
         nav_bar.add_widget(recipes)
         
         scan = Button(size_hint_x=1, width=100, background_normal='images/scan.png')
         nav_bar.add_widget(scan)
         
-        account= Button(size_hint_x=1, width=100, background_normal='images/account.png')
+        account = Button(size_hint_x=1, width=100, background_normal='images/account.png')
         nav_bar.add_widget(account)
                 
         self.add_widget(nav_bar)
@@ -218,11 +227,11 @@ class HomePage(BoxLayout):
               content=layout,
               size_hint=(0.8, 0.8))
         popup.open()
-
-        
-        
-       
-
+  
+    
+    def switch_to_new_page(self, instance):
+        print("we got something")
+        self.parent.manager.current = 'new_page'
 
 # Page Management 
 class NewPage(BoxLayout):
@@ -242,21 +251,21 @@ class NewPage(BoxLayout):
     def switch_to_home_page(self, instance):
         self.parent.current = 'home_page'
 
+class NewScreen(Screen):
+    def __init__(self, **kwargs):
+        super(NewScreen, self).__init__(**kwargs)
+        self.add_widget(NewPage())
 
 # Core App
 class MyApp(App):
     def build(self):
         sm = ScreenManager()
 
-        home_page = HomePage()
-        screen_home = Screen(name='home_page')
-        screen_home.add_widget(home_page)
-        sm.add_widget(screen_home)
+        #home_page = HomeScreen()
+        #screen_home = Screen(name='home_page')
 
-        new_page = NewPage()
-        screen_new = Screen(name='new_page')
-        screen_new.add_widget(new_page)
-        sm.add_widget(screen_new)
+        sm.add_widget(HomeScreen(name='home_page'))
+        sm.add_widget(NewScreen(name='new_page'))
 
         return sm
 
