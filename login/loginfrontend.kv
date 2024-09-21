@@ -1,0 +1,215 @@
+#:import dp kivy.metrics.dp
+#:import rgba kivy.utils.rgba
+
+ScreenManager:
+    LoginScreen:
+    RegistrationScreen:
+
+<LoginScreen>:
+    name: 'login_screen'
+    FloatLayout:
+
+        # Background Image (optional)
+        # If you have a background image, include it here
+        Image:
+            source: 'BackgroundPic.png'  # Replace with your background image if desired
+            allow_stretch: True
+            keep_ratio: False
+
+        # Login Form BoxLayout
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 0.8, None
+            height: self.minimum_height  # Adjust height based on content
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            spacing: dp(15)
+            padding: dp(20)
+            canvas.before:
+                Color:
+                    rgba: rgba('#FFFFFFDD')  # Semi-transparent white
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [20]
+
+            Label:
+                text: 'Welcome to Wastefree!'
+                font_size: '24sp'
+                bold: True
+                color: rgba('#2E7D32')  # Green color
+                size_hint_y: None
+                height: self.texture_size[1]
+
+            TextInput:
+                id: username_input
+                hint_text: 'Username'
+                multiline: False
+                write_tab: False
+                size_hint_y: None
+                height: dp(44)
+                background_normal: ''
+                background_color: rgba('#E8F5E9')
+                foreground_color: rgba('#1B5E20')
+                padding: dp(10)
+
+            TextInput:
+                id: password_input
+                hint_text: 'Password'
+                multiline: False
+                password: True
+                write_tab: False
+                size_hint_y: None
+                height: dp(44)
+                background_normal: ''
+                background_color: rgba('#E8F5E9')
+                foreground_color: rgba('#1B5E20')
+                padding: dp(10)
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(10)
+
+                Button:
+                    text: 'Login'
+                    background_normal: ''
+                    background_color: rgba('#66BB6A')
+                    color: rgba('#FFFFFF')
+                    font_size: '18sp'
+                    on_press: root.do_login()
+
+                Button:
+                    text: 'Register'
+                    background_normal: ''
+                    background_color: rgba('#42A5F5')
+                    color: rgba('#FFFFFF')
+                    font_size: '18sp'
+                    on_press: root.go_to_register()
+
+            Label:
+                text: root.feedback
+                color: rgba('#D32F2F')  # Red color for errors
+                size_hint_y: None
+                height: self.texture_size[1]
+
+<RegistrationScreen>:
+    name: 'registration_screen'
+    FloatLayout:
+        canvas.before:
+            Color:
+                rgba: rgba('#FFFFFF')  # Full white background for the whole screen
+            Rectangle:
+                pos: self.pos
+                size: self.size
+
+        # Registration Form BoxLayout
+        BoxLayout:
+            orientation: 'vertical'
+            size_hint: 0.8, None
+            height: self.minimum_height  # Adjust height based on content
+            pos_hint: {'center_x': 0.5, 'center_y': 0.5}
+            spacing: dp(15)
+            padding: dp(20)
+            canvas.before:
+                Color:
+                    rgba: rgba('#FFFFFFAA')  # Semi-transparent white form background
+                RoundedRectangle:
+                    pos: self.pos
+                    size: self.size
+                    radius: [20]
+
+            Label:
+                text: 'Create an Account'
+                font_size: '24sp'
+                bold: True
+                color: rgba('#2E7D32')  # Green color
+                size_hint_y: None
+                height: self.texture_size[1]
+
+            TextInput:
+                id: first_name_input
+                hint_text: 'First Name'
+                multiline: False
+                write_tab: False
+                size_hint_y: None
+                height: dp(44)
+                background_normal: ''
+                background_color: rgba('#E8F5E9')
+                foreground_color: rgba('#1B5E20')
+                padding: dp(10)
+
+            TextInput:
+                id: last_name_input
+                hint_text: 'Last Name'
+                multiline: False
+                write_tab: False
+                size_hint_y: None
+                height: dp(44)
+                background_normal: ''
+                background_color: rgba('#E8F5E9')
+                foreground_color: rgba('#1B5E20')
+                padding: dp(10)
+
+            TextInput:
+                id: email_input
+                hint_text: 'Email'
+                multiline: False
+                write_tab: False
+                size_hint_y: None
+                height: dp(44)
+                background_normal: ''
+                background_color: rgba('#E8F5E9')
+                foreground_color: rgba('#1B5E20')
+                padding: dp(10)
+
+            TextInput:
+                id: username_input
+                hint_text: 'Username'
+                multiline: False
+                write_tab: False
+                size_hint_y: None
+                height: dp(44)
+                background_normal: ''
+                background_color: rgba('#E8F5E9')
+                foreground_color: rgba('#1B5E20')
+                padding: dp(10)
+
+            TextInput:
+                id: password_input
+                hint_text: 'Password'
+                multiline: False
+                password: True
+                write_tab: False
+                size_hint_y: None
+                height: dp(44)
+                background_normal: ''
+                background_color: rgba('#E8F5E9')
+                foreground_color: rgba('#1B5E20')
+                padding: dp(10)
+
+            BoxLayout:
+                size_hint_y: None
+                height: dp(50)
+                spacing: dp(10)
+
+                Button:
+                    text: 'Register'
+                    background_normal: ''
+                    background_color: rgba('#42A5F5')
+                    color: rgba('#FFFFFF')
+                    font_size: '18sp'
+                    on_press: root.do_register()
+
+                Button:
+                    text: 'Back'
+                    background_normal: ''
+                    background_color: rgba('#66BB6A')
+                    color: rgba('#FFFFFF')
+                    font_size: '18sp'
+                    on_press: app.root.current = 'login_screen'
+
+            Label:
+                text: root.feedback
+                color: rgba('#D32F2F')  # Red color for errors
+                size_hint_y: None
+                height: self.texture_size[1]
