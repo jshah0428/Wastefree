@@ -14,6 +14,7 @@ from io import BytesIO
 import certifi
 import sqlite3
 from kivymd.uix.boxlayout import MDBoxLayout
+import databases_schema as dbs
 
 KV = '''
 ScreenManager:
@@ -26,6 +27,16 @@ ScreenManager:
     MDBoxLayout:
         orientation: 'vertical'
         spacing: 10
+
+        MDRaisedButton:
+            text: "Saved Recipes"
+            on_release: app.display_saved_recipes()
+            pos_hint: {"center_x": .5}
+
+        MDScrollView:
+            size_hint_y: 0.3  # Adjust this value to control the height of the scroll area
+            MDList:
+                id: saved_recipes_list
 
         MDTopAppBar:
             title: "Recipe Search"
@@ -43,7 +54,6 @@ ScreenManager:
             text: "Search Recipes"
             pos_hint: {"center_x": .5}
             on_release: app.search_recipes()
-
 <RecipeListScreen>:
     name: 'recipe_list'
     MDBoxLayout:
@@ -52,6 +62,14 @@ ScreenManager:
         MDTopAppBar:
             title: "Recipe List"
             left_action_items: [["arrow-left", lambda x: app.switch_screen('search')]]
+        MDLabel:
+            id: save_message
+            text: ""
+            halign: "center"
+            theme_text_color: "Custom"
+            text_color: 0, 1, 0, 1  # Green color for success message
+            size_hint_y: None
+            height: self.texture_size[1]
 
         MDScrollView:
             MDList:
@@ -146,36 +164,48 @@ class RecipeApp(MDApp):
 
     def switch_screen(self, screen_name):
         self.root.current = screen_name
+        if screen_name == 'search':
+            self.display_saved_recipes()
 
     def search_recipes(self):
-        search_text = self.root.get_screen('search').ids.search_field.text
+        first_page = self.root.get_screen('search')
+        search_text = first_page.ids.search_field.text
         recipes = self.scraper(search_text)
         self.display_recipe_list(recipes)
 
-    def display_recipe_list(self, recipes):
-        recipe_list = self.root.get_screen('recipe_list').ids.recipe_list
-        recipe_list.clear_widgets()
-        for recipe in recipes:
-            item = OneLineListItem(text=recipe['name'], on_release=lambda x, r=recipe: self.show_recipe_detail(r))
-            recipe_list.add_widget(item)
-        self.switch_screen('recipe_list')
+    def display_saved_recipes(self):
+        connection = sqlite3.connect('/Users/jainamshah/PycharmProjects/Wastefree/recipe.db')
+        cursor = connection.cursor()
 
-    def show_recipe_detail(self, recipe):
-        detail_screen = self.root.get_screen('recipe_detail')
-        detail_screen.ids.recipe_name.text = recipe['name']
-        # detail_screen.ids.recipe_image.source = recipe['image_url']  # Set the image source
-        # detail_screen.ids.recipe_image.reload()  # Reload the image
-        detail_screen.ids.recipe_description.text = recipe['description']
-        detail_screen.ids.recipe_ingredients.text = '\n'.join(recipe['ingredients'])
-        detail_screen.ids.recipe_directions.text = '\n'.join(recipe['directions'])
-        detail_screen.ids.recipe_nutrition.text = '\n'.join(recipe['nutrition'])
-        detail_screen.ids.recipe_prep_info.text = '\n'.join(recipe['prep_info'])
-        self.current_recipe_url = recipe['url']
-        self.switch_screen('recipe_detail')
+        cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='SAVED_RECIPES'")
+        table_exists = cursor.fetchone()
 
-    def open_recipe_link(self):
-        if self.current_recipe_url:
-            webbrowser.open(self.current_recipe_url)
+        search_screen = self.root.get_screen('search')
+        saved_recipes_list = search_screen.ids.saved_recipes_list
+        saved_recipes_list.clear_widgets()  # Clear existing widgets
+
+        if table_exists:
+            cursor.execute("SELECT DISTINCT RECIPE_NAME, RECIPE_URL FROM SAVED_RECIPES")
+            saved_recipes = cursor.fetchall()
+
+            if saved_recipes:
+                for recipe in saved_recipes:
+                    item = OneLineListItem(
+                        text=recipe[0],
+                        on_release=lambda x, url=recipe[1]: webbrowser.open(url)
+                    )
+                    saved_recipes_list.add_widget(item)
+            else:
+                saved_recipes_list.add_widget(OneLineListItem(text="No saved recipes"))
+        else:
+            saved_recipes_list.add_widget(OneLineListItem(text="No saved recipes"))
+
+        connection.close()
+
+
+
+
+
 
     def scraper(self, search_text):
         food_list = search_text.split()
@@ -272,6 +302,7 @@ class RecipeApp(MDApp):
 
         return recipes
 
+    #page where we see all recipe list and save button
     def display_recipe_list(self, recipes):
         recipe_list = self.root.get_screen('recipe_list').ids.recipe_list
         recipe_list.clear_widgets()
@@ -298,29 +329,45 @@ class RecipeApp(MDApp):
             recipe_list.add_widget(box_layout)
 
         self.switch_screen('recipe_list')
+    def show_recipe_detail(self, recipe):
+        detail_screen = self.root.get_screen('recipe_detail')
+        detail_screen.ids.recipe_name.text = recipe['name']
+        # detail_screen.ids.recipe_image.source = recipe['image_url']  # Set the image source
+        # detail_screen.ids.recipe_image.reload()  # Reload the image
+        detail_screen.ids.recipe_description.text = recipe['description']
+        detail_screen.ids.recipe_ingredients.text = '\n'.join(recipe['ingredients'])
+        detail_screen.ids.recipe_directions.text = '\n'.join(recipe['directions'])
+        detail_screen.ids.recipe_nutrition.text = '\n'.join(recipe['nutrition'])
+        detail_screen.ids.recipe_prep_info.text = '\n'.join(recipe['prep_info'])
+        self.current_recipe_url = recipe['url']
+        self.switch_screen('recipe_detail')
 
-    def init_db(self):
-        connection = sqlite3.connect('recipe.db')
-        cursor = connection.cursor()
-        cursor.execute('''
-                      CREATE TABLE IF NOT EXISTS SAVED_RECIPES(
-                      RECIPE_NAME VARCHAR(255),
-                      RECIPE_URL VARCHAR(255),
-                      RECIPE_INGREDIENTS TEXT,
-                      RECIPE_DESCRIPTION TEXT,
-                      RECIPE_DIRECTIONS TEXT,
-                      RECIPE_NUTRITION TEXT,
-                      RECIPE_PREP_INFO TEXT,
-                      PRIMARY KEY (RECIPE_NAME)
-                      );
-                      ''')
-        connection.commit()
-        connection.close()
+    def open_recipe_link(self):
+        if self.current_recipe_url:
+            webbrowser.open(self.current_recipe_url)
+
+    # def init_db(self):
+    #     connection = sqlite3.connect('recipe.db')
+    #     cursor = connection.cursor()
+    #     cursor.execute('''
+    #                   CREATE TABLE IF NOT EXISTS SAVED_RECIPES(
+    #                   RECIPE_NAME VARCHAR(255),
+    #                   RECIPE_URL VARCHAR(255),
+    #                   RECIPE_INGREDIENTS TEXT,
+    #                   RECIPE_DESCRIPTION TEXT,
+    #                   RECIPE_DIRECTIONS TEXT,
+    #                   RECIPE_NUTRITION TEXT,
+    #                   RECIPE_PREP_INFO TEXT,
+    #                   PRIMARY KEY (RECIPE_NAME)
+    #                   );
+    #                   ''')
+    #     connection.commit()
+    #     connection.close()
 
     def save_recipe(self, recipe):
-        self.init_db()
 
-        connection = sqlite3.connect('recipe.db')
+        dbs.saved_recipes_db()
+        connection = sqlite3.connect('/Users/jainamshah/PycharmProjects/Wastefree/recipe.db')
         cursor = connection.cursor()
 
         # Convert list values to strings
@@ -336,6 +383,8 @@ class RecipeApp(MDApp):
         ''', (recipe['name'], recipe['url'], ingredients, recipe['description'], directions, nutrition, prep_info))
 
         connection.commit()
+
+        self.root.get_screen('recipe_list').ids.save_message.text = "Your recipe has been successfully saved"
         connection.close()
 
 if __name__ == "__main__":

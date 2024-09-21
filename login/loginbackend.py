@@ -5,28 +5,12 @@ import re
 from kivy.app import App
 from kivy.properties import StringProperty
 from kivy.uix.screenmanager import ScreenManager, Screen
+import databases_schema as dbs
+from recipe_finder import recipe_finder
+import subprocess
 
 # Path to your SQLite database file
-DATABASE_NAME = 'wastefree_db.db'
-
-
-def initialize_database():
-    if not os.path.exists(DATABASE_NAME):
-        connection = sqlite3.connect(DATABASE_NAME)
-        cursor = connection.cursor()
-        cursor.execute('''
-            CREATE TABLE user (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                first_name TEXT NOT NULL,
-                last_name TEXT NOT NULL,
-                email TEXT UNIQUE NOT NULL,
-                username TEXT UNIQUE NOT NULL,
-                password TEXT NOT NULL
-            )
-        ''')
-        connection.commit()
-        connection.close()
-
+DATABASE_NAME = '/Users/jainamshah/PycharmProjects/Wastefree/recipe.db'
 
 def is_valid_username(username):
     # Username must be 3-20 characters long and can contain letters, numbers, underscores, and periods
@@ -75,8 +59,11 @@ class LoginScreen(Screen):
                 # Verify the password using bcrypt
                 if bcrypt.checkpw(password.encode('utf-8'), stored_password.encode('utf-8')):
                     self.feedback = ''
-                    # TODO: Navigate to the main app screen or perform other actions
                     print('Login successful!')
+
+                    # Run recipe_finder.py as a subprocess
+                    subprocess.Popen(['python3', '/Users/jainamshah/PycharmProjects/Wastefree/recipe_finder/recipe_finder.py'])
+                    # Alternatively, use 'python' if your system doesn't use 'python3'
                 else:
                     self.feedback = 'Invalid username or password.'
             else:
@@ -158,7 +145,7 @@ class RegistrationScreen(Screen):
 
 class LoginApp(App):
     def build(self):
-        initialize_database()
+        dbs.initialize_accounts_database()
         sm = ScreenManager()
         sm.add_widget(LoginScreen(name='login_screen'))
         sm.add_widget(RegistrationScreen(name='registration_screen'))
