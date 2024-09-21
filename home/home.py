@@ -151,7 +151,7 @@ class HomePage(BoxLayout):
         scroll_view.add_widget(scroll_layout)
         self.add_widget(scroll_view)
 
-        # Navigation Bar
+        
         nav_bar = BoxLayout(orientation='horizontal', size_hint_y=None, height=50)
         
         pantry= Button(background_normal='images/pantry.png')
@@ -165,12 +165,10 @@ class HomePage(BoxLayout):
 
         account= Button(size_hint_x=1, width=100, background_normal='images/account.png')
         nav_bar.add_widget(account)
-        
-        # for i in range(4):
-        #     nav_button = Button(text=f'Nav {i+1}', size_hint_x=1, width=100)
-        #     nav_bar.add_widget(nav_button)
-
+                
         self.add_widget(nav_bar)
+        
+       
 
 
 # Page Management 
