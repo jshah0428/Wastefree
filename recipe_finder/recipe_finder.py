@@ -14,7 +14,7 @@ from io import BytesIO
 import certifi
 import sqlite3
 from kivymd.uix.boxlayout import MDBoxLayout
-
+import sqlitecloud
 KV = '''
 ScreenManager:
     SearchScreen:
@@ -299,11 +299,15 @@ class RecipeApp(MDApp):
 
         self.switch_screen('recipe_list')
 
+    def get_db(self):
+        connection_string = sqlitecloud.connect('sqlitecloud://co3prupghz.sqlite.cloud:8860/chinook.sqlite?apikey=tGDCh4GBFEcLjuTIklV0KjLEcpkGeyoHt6jidOprOxM')
+        return connection_string
     def init_db(self):
-        connection = sqlite3.connect('recipe.db')
+        connection = self.get_db()
         cursor = connection.cursor()
         cursor.execute('''
                       CREATE TABLE IF NOT EXISTS SAVED_RECIPES(
+                      ID INTEGER AUTO_INCREMENT
                       RECIPE_NAME VARCHAR(255),
                       RECIPE_URL VARCHAR(255),
                       RECIPE_INGREDIENTS TEXT,
@@ -311,7 +315,8 @@ class RecipeApp(MDApp):
                       RECIPE_DIRECTIONS TEXT,
                       RECIPE_NUTRITION TEXT,
                       RECIPE_PREP_INFO TEXT,
-                      PRIMARY KEY (RECIPE_NAME)
+                      PRIMARY KEY (RECIPE_NAME),
+                      FOREIGN KEY (ID) REFERENCES USER(ID) 
                       );
                       ''')
         connection.commit()
@@ -320,6 +325,8 @@ class RecipeApp(MDApp):
     def save_recipe(self, recipe):
         self.init_db()
 
+        print("we are connected")
+        exit()
         connection = sqlite3.connect('recipe.db')
         cursor = connection.cursor()
 
