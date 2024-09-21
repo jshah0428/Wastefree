@@ -9,10 +9,8 @@ ScreenManager:
     name: 'login_screen'
     FloatLayout:
 
-        # Background Image (optional)
-        # If you have a background image, include it here
         Image:
-            source: 'BackgroundPic.png'  # Replace with your background image if desired
+            source: 'BackgroundPic.png'
             allow_stretch: True
             keep_ratio: False
 
@@ -20,13 +18,13 @@ ScreenManager:
         BoxLayout:
             orientation: 'vertical'
             size_hint: 0.8, None
-            height: self.minimum_height  # Adjust height based on content
+            height: self.minimum_height
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             spacing: dp(15)
             padding: dp(20)
             canvas.before:
                 Color:
-                    rgba: rgba('#FFFFFFDD')  # Semi-transparent white
+                    rgba: rgba('#FFFFFFDD')
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
@@ -36,7 +34,7 @@ ScreenManager:
                 text: 'Welcome to Wastefree!'
                 font_size: '24sp'
                 bold: True
-                color: rgba('#2E7D32')  # Green color
+                color: rgba('#2E7D32')
                 size_hint_y: None
                 height: self.texture_size[1]
 
@@ -88,7 +86,7 @@ ScreenManager:
 
             Label:
                 text: root.feedback
-                color: rgba('#D32F2F')  # Red color for errors
+                color: rgba('#D32F2F')
                 size_hint_y: None
                 height: self.texture_size[1]
 
@@ -97,7 +95,7 @@ ScreenManager:
     FloatLayout:
         canvas.before:
             Color:
-                rgba: rgba('#FFFFFF')  # Full white background for the whole screen
+                rgba: rgba('#FFFFFF')
             Rectangle:
                 pos: self.pos
                 size: self.size
@@ -106,13 +104,13 @@ ScreenManager:
         BoxLayout:
             orientation: 'vertical'
             size_hint: 0.8, None
-            height: self.minimum_height  # Adjust height based on content
+            height: self.minimum_height
             pos_hint: {'center_x': 0.5, 'center_y': 0.5}
             spacing: dp(15)
             padding: dp(20)
             canvas.before:
                 Color:
-                    rgba: rgba('#FFFFFFAA')  # Semi-transparent white form background
+                    rgba: rgba('#FFFFFFAA')
                 RoundedRectangle:
                     pos: self.pos
                     size: self.size
@@ -122,7 +120,7 @@ ScreenManager:
                 text: 'Create an Account'
                 font_size: '24sp'
                 bold: True
-                color: rgba('#2E7D32')  # Green color
+                color: rgba('#2E7D32')
                 size_hint_y: None
                 height: self.texture_size[1]
 
@@ -210,6 +208,6 @@ ScreenManager:
 
             Label:
                 text: root.feedback
-                color: rgba('#D32F2F')  # Red color for errors
+                color: rgba('#D32F2F')
                 size_hint_y: None
                 height: self.texture_size[1]
