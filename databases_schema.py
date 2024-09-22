@@ -44,17 +44,17 @@ def pantry_database():
     cursor = connection.cursor()
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS pantry (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        id INTEGER PRIMARY KEY NOT NULL,                      -- Unique ID for each record in the pantry
         item_name TEXT,
         quantity INTEGER,
         unit_price REAL,
         total_price REAL,
-        purchase_date DATE,
+        purchase_date DATETIME DEFAULT (CURRENT_TIMESTAMP),
         expiry_date DATE,
         consumed INTEGER DEFAULT 0,  -- 1 if consumed, 0 if wasted
         wasted INTEGER DEFAULT 0,     -- 1 if wasted, 0 if not
-        FOREIGN KEY (ID) REFERENCES user(id)
-    );
+        FOREIGN KEY (id) REFERENCES user(id)  -- Foreign key to user table
+);
     
     ''')
     connection.commit()
