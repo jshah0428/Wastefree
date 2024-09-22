@@ -4,13 +4,14 @@ from login import loginbackend
 from recieptScanner import process_receipt
 import sqlite3
 import databases_schema as dbs
+import subprocess
+import sys
 
 # Kivy Imports
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
-from kivy.uix.image import Image
 from kivy.uix.filechooser import FileChooserIconView
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
@@ -20,6 +21,7 @@ from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.config import Config
 from kivy.graphics import Color, Line, Rectangle
+
 
 Window.size = (325, 600)
 Window.clearcolor = (1, 0.94, 0.85, 1)
@@ -147,12 +149,31 @@ class NavBar(BoxLayout):
         scan.bind(on_press=self.switch_to_scan_page)
         
         account = Button(background_normal='images/account.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+        account.bind(on_press=self.logout)
 
         self.add_widget(pantry)
         self.add_widget(trends)
         self.add_widget(recipes)
         self.add_widget(scan)
         self.add_widget(account)
+
+    # Upon activation of this function a popup will appear with a button saying "Logout", when pressed
+    # the application will terminate 
+    def logout(self, instance):
+        layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        layout.add_widget(Label(text='Are you sure you want to logout?', halign='center', valign='middle', color=(0.133, 0.545, 0.133, 1)))
+
+        logout_button = Button(text='Logout', size_hint=(1, 0.2), background_color=(0.133, 0.545, 0.133, 1))
+        logout_button.bind(on_press=lambda x: self.terminate_app())
+        layout.add_widget(logout_button)
+
+        popup = Popup(title='Logout', content=layout, size_hint=(0.8, 0.5))
+        popup.open()
+
+    def terminate_app(self):
+        App.get_running_app().stop()
+        Window.close()
+
 
     def switch_to_home_page(self, instance):
         self.parent.parent.manager.current = 'home_page'
@@ -459,16 +480,30 @@ class RecipesPage(BoxLayout):
         super(RecipesPage, self).__init__(**kwargs)
         self.orientation = 'vertical'
 
-        # Header Label
+        # RecipeApp().run()
+        # # Header Label
         header = Label(text='Recipes Page', size_hint_y=None, height=50)
         self.add_widget(header)
+        
+        # Launch RecipeBook Button
+        launch_button = Button(
+            text='Launch RecipeBook',
+            size_hint=(None, None),
+            size=(200, 50),
+            pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        )
+
+        launch_button.bind(on_press=self.launch_recipe_book)
+        self.add_widget(launch_button)
 
         self.add_widget(NavBar())
-
+    def launch_recipe_book(self, instance):
+        subprocess.Popen([sys.executable, '../recipe_finder/recipe_finder.py'])
 class RecipesScreen(Screen):
     def __init__(self, **kwargs):
         super(RecipesScreen, self).__init__(**kwargs)
         self.add_widget(RecipesPage())
+
 
 class MyApp(App):
     def build(self):
@@ -477,8 +512,7 @@ class MyApp(App):
         sm.add_widget(HomeScreen(name='home_page'))
         sm.add_widget(TrendsScreen(name='trends_page'))
         sm.add_widget(ScannerScreen(name='scan_page'))
-        
-        # Add widgets for the different screens
+        sm.add_widget(RecipesScreen(name='recipes_page'))        
 
         return sm
 

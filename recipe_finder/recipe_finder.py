@@ -217,7 +217,8 @@ class RecipeApp(MDApp):
         self.display_recipe_list(recipes)
 
     def display_saved_recipes(self):
-        connection = sqlite3.connect('/Users/shreyaskonanki/PycharmProjects/Wastefree/recipe.db')
+        connection = sqlite3.connect('/Users/jainamshah/PycharmProjects/Wastefree/recipe.db')
+
         cursor = connection.cursor()
 
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='SAVED_RECIPES'")
