@@ -286,7 +286,7 @@ class ScannerPage(BoxLayout):
         self.orientation = 'vertical'
 
         # Header Label
-        header = Label(text='Scanner Page', size_hint_y=None, height=50)
+        header = Label(text='Receipt Scanner', bold=True, size_hint_y=None, height=50)
         self.add_widget(header)
 
         # FileChooser
@@ -381,12 +381,27 @@ class ItemAdderPage(BoxLayout):
         add_button.bind(on_press=lambda x: add_item(index))
         remove_button.bind(on_press=lambda x: remove_item())   
         
-
 class ItemAdderScreen(Screen):
     def __init__(self, reciept_data, **kwargs):
         super(ItemAdderScreen, self).__init__(**kwargs)
         self.add_widget(ItemAdderPage(reciept_data))
 
+# Recipes Page
+class RecipesPage(BoxLayout):
+    def __init__(self, **kwargs):
+        super(RecipesPage, self).__init__(**kwargs)
+        self.orientation = 'vertical'
+
+        # Header Label
+        header = Label(text='Recipes Page', size_hint_y=None, height=50)
+        self.add_widget(header)
+
+        self.add_widget(NavBar())
+
+class RecipesScreen(Screen):
+    def __init__(self, **kwargs):
+        super(RecipesScreen, self).__init__(**kwargs)
+        self.add_widget(RecipesPage())
 
 class MyApp(App):
     def build(self):
