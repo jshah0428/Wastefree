@@ -1,4 +1,4 @@
-from datetime import datetime
+from datetime import datetime 
 
 # Kivy Imports
 from kivy.app import App
@@ -13,8 +13,10 @@ from kivy.core.window import Window
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.config import Config
-from kivy.core.window import Window
+from kivy.graphics import Color, Line
+
 Window.size = (325, 600)
+Window.clearcolor = (1, 1, 1, 1)  # White background
 
 #TODO
 # - FIX THE UI DOING THAT
@@ -34,6 +36,8 @@ class ItemWidget(BoxLayout):
         self.orientation = 'horizontal'
         self.size_hint_y = None
         self.height = 100
+        self.padding = [10, 10, 10, 10]
+        self.spacing = 10
 
         self.name = name
         self.quantity = quantity
@@ -42,91 +46,88 @@ class ItemWidget(BoxLayout):
         self.expire = expire
         self.avgCost = avgCost
 
-       
-        # Food Name
-        self.entry_name     = Label( 
-                                text=name, 
-                                size_hint_x=1, 
-                                width=100)
-        #Food Quantity
-        self.entry_number   = Label(
-                                text=quantity, 
-                                size_hint_x=1,
-                                width=10)
-        
+        # Updated colors for the new eco-friendly theme
+        self.primary_color = (0.133, 0.545, 0.133, 1)  # Green text
+        self.secondary_color = (0.133, 0.545, 0.133, 1)  # Green text
 
-        # Info Button
-        infoButton = Button(size_hint=(0.8,0.8), background_normal='images/info.png')
+        # Food Name Label with environmental style
+        self.entry_name = Label(
+            text=name, 
+            size_hint_x=2,
+            halign='left', 
+            valign='middle',
+            color=self.primary_color, 
+            font_size=18,
+            font_name="Roboto"
+        )
+        self.entry_name.bind(size=self.entry_name.setter('text_size'))
+
+        # Food Quantity Label
+        self.entry_number = Label(
+            text=quantity, 
+            size_hint_x=1, 
+            halign='right', 
+            valign='middle',
+            color=self.secondary_color, 
+            font_size=18,
+            font_name="Roboto"
+        )
+        self.entry_number.bind(size=self.entry_number.setter('text_size'))
+
+        # Info and Remove Buttons
+        infoButton = Button(size_hint=(None, None), size=(50, 50), background_normal='images/info.png', background_color=(0.133, 0.545, 0.133, 1))
         infoButton.bind(on_press=lambda x: self.displayInformation())
-
-        # Remove Button
-        removeButton = Button(size_hint_x=0.6, background_normal='images/remove.png')
+        
+        removeButton = Button(size_hint=(None, None), size=(50, 50), background_normal='images/remove.png', background_color=(0.133, 0.545, 0.133, 1))
         removeButton.bind(on_press=lambda x: self.consumeFood())
 
-        # Adding widgets
+        # Add widgets
         self.add_widget(self.entry_name)
         self.add_widget(self.entry_number)
         self.add_widget(infoButton)
         self.add_widget(removeButton)
-    
-    # If the quantity is 0, remove the item from the list 
+
     def consumeFood(self):
-        # Create a popup which asks how much to remove or all
         print('Removing food')
+
         def remove_quantity(instance):
             quantity_to_remove = int(quantity_input.text)
             self.quantity = str(max(0, int(self.quantity) - quantity_to_remove))
             self.entry_number.text = self.quantity
             popup.dismiss()
 
-            # MAKE SURE TO UPDATE THE DATA BASE FIRST THOUGH
             if int(self.quantity) == 0:
-                self.parent.remove_widget(self)            
+                self.parent.remove_widget(self)
 
-        layout = BoxLayout(orientation='vertical')
-        layout.add_widget(Label(text=f'{self.quantity} {self.name}(s)\nHow many do you want to remove? ',
-                    halign='center', valign='middle', text_size=(None, None)))
-        quantity_input = TextInput(multiline=False)
+        layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        layout.add_widget(Label(text=f'Remove {self.name}(s)\nCurrent Quantity: {self.quantity}', halign='center', valign='middle', color=self.primary_color))
+        quantity_input = TextInput(multiline=False, hint_text='Enter quantity to remove')
         layout.add_widget(quantity_input)
 
-        remove_button = Button(text='Remove')
+        remove_button = Button(text='Remove', size_hint=(1, 0.2), background_color=(0.133, 0.545, 0.133, 1))
         remove_button.bind(on_press=remove_quantity)
         layout.add_widget(remove_button)
 
-        popup = Popup(title='Remove Quantity',
-                  content=layout,
-                  size_hint=(0.8, 0.5))
+        popup = Popup(title='Remove Quantity', content=layout, size_hint=(0.8, 0.5))
         popup.open()
 
-
     def displayInformation(self):
-        # Create a popup which displays the information about the item
         date_time = datetime.fromtimestamp(self.expire)
         formatted_date = date_time.strftime('%m/%d/%Y')
         totalcost = int(self.quantity) * float(self.avgCost)
 
-        layout = BoxLayout(orientation='vertical')
-        layout.add_widget(Label(text=f'Name: {self.name}', size_hint=(1, 0.2), halign='center', valign='middle', text_size=(None, None)))
-        layout.add_widget(Label(text=f'Quantity: {self.quantity}', size_hint=(1, 0.2), halign='center', valign='middle', text_size=(None, None)))
-        layout.add_widget(Label(text=f'Expiration: {formatted_date}', size_hint=(1, 0.2), halign='center', valign='middle', text_size=(None, None)))
-        layout.add_widget(Label(text=f'Total Cost: ${format(totalcost, ",.2f")}', size_hint=(1, 0.2), halign='center', valign='middle', text_size=(None, None)))
-        
+        layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        layout.add_widget(Label(text=f'Name: {self.name}', color=self.primary_color, font_size=18))
+        layout.add_widget(Label(text=f'Quantity: {self.quantity}', color=self.secondary_color, font_size=18))
+        layout.add_widget(Label(text=f'Expiration: {formatted_date}', color=self.primary_color, font_size=18))
+        layout.add_widget(Label(text=f'Total Cost: ${totalcost:.2f}', color=self.secondary_color, font_size=18))
 
-        close_button = Button(text='Close', size_hint=(1, 0.2))
+        close_button = Button(text='Close', size_hint=(1, 0.2), background_color=(0.133, 0.545, 0.133, 1))
         close_button.bind(on_press=lambda x: popup.dismiss())
         layout.add_widget(close_button)
 
-        popup = Popup(title='Item Information',
-                      content=layout,
-                      size_hint=(0.8, 0.5))
+        popup = Popup(title='Item Information', content=layout, size_hint=(0.8, 0.5))
         popup.open()
-
-
-# Home Page
-class HomeScreen(Screen):
-    def __init__(self, **kwargs):
-        super(HomeScreen, self).__init__(**kwargs)
-        self.add_widget(HomePage())
 
 
 class HomePage(BoxLayout):
@@ -135,50 +136,44 @@ class HomePage(BoxLayout):
         self.orientation = 'vertical'
 
         # Header Label
-        header = Label(text='Pantry', font_size=24, size_hint_y=None, bold=True) # Might need to add a size thing here
+        header = Label(text='Pantry', font_size=24, size_hint_y=None, bold=True, color=(0, 0.545, 0.137, 1))  # Green text
         self.add_widget(header)
 
         # New Button
-        new_button = Button(text='New', size_hint = (0.4, 0.1))
-        new_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}        
-        new_button.bind(on_press=self.new_entry)
-
+        new_button = Button(
+            text='New', 
+            size_hint=(0.1, 0.1), 
+            background_color=(0, 0, 0, 0),  # Light green background
+            color=(0.133, 0.545, 0.133, 1)  # Green text
+        )
+        new_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}
         self.add_widget(new_button)
 
         # Scrollable Frame
         scroll_view = ScrollView()
         scroll_layout = GridLayout(cols=1, spacing=10, size_hint_y=None)
         scroll_layout.bind(minimum_height=scroll_layout.setter('height'))
-    
 
-        # RUN DATABASE PRE PROCESSING HERE
         for i in range(10):  # Example list entries
-            entry = ItemWidget('Apple', f'{i}', i)
+            entry = ItemWidget(f'Item {i+1}', f'{i}', i)
             scroll_layout.add_widget(entry)
 
         scroll_view.add_widget(scroll_layout)
         self.add_widget(scroll_view)
 
-
         # Navigation Bar
-        nav_bar = BoxLayout(orientation='horizontal', size_hint_y=None, height=50)
-        
-        pantry = Button(background_normal='images/pantry.png')
-        nav_bar.add_widget(pantry)
+        nav_bar = BoxLayout(orientation='horizontal', size_hint_y=None, height=50, padding=[45, 0], spacing=20)
 
-        trends = Button(size_hint_x=1, width=100, background_normal='images/trends.png')
-        trends.bind(on_press=self.switch_to_new_page)
+        pantry = Button(background_normal='images/pantry.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+        trends = Button(background_normal='images/trends.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+        recipes = Button(background_normal='images/recipes.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+        account = Button(background_normal='images/account.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+
+        nav_bar.add_widget(pantry)
         nav_bar.add_widget(trends)
-        
-        recipes = Button(size_hint_x=1, width=100, background_normal='images/recipes.png')
         nav_bar.add_widget(recipes)
-        
-        scan = Button(size_hint_x=1, width=100, background_normal='images/scan.png')
-        nav_bar.add_widget(scan)
-        
-        account = Button(size_hint_x=1, width=100, background_normal='images/account.png')
         nav_bar.add_widget(account)
-                
+
         self.add_widget(nav_bar)
 
     def new_entry(self, instance):
@@ -253,27 +248,23 @@ class NewPage(BoxLayout):
     def switch_to_home_page(self, instance):
         self.parent.manager.current = 'home_page'
 
-class NewScreen(Screen):
-    def __init__(self, **kwargs):
-        super(NewScreen, self).__init__(**kwargs)
-        self.add_widget(NewPage())
 
-# Core App
 class MyApp(App):
     def build(self):
         sm = ScreenManager()
 
-        #home_page = HomeScreen()
-        #screen_home = Screen(name='home_page')
+        home_page = HomePage()
+        screen_home = Screen(name='home_page')
+        screen_home.add_widget(home_page)
+        sm.add_widget(screen_home)
 
-        sm.add_widget(HomeScreen(name='home_page'))
-        sm.add_widget(NewScreen(name='new_page'))
+        new_page = NewPage()
+        screen_new = Screen(name='new_page')
+        screen_new.add_widget(new_page)
+        sm.add_widget(screen_new)
 
         return sm
 
+
 if __name__ == '__main__':
     MyApp().run()
-
-
-
-
