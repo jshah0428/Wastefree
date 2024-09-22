@@ -48,7 +48,8 @@ class ItemWidget(BoxLayout):
             valign='middle',
             color=self.primary_color, 
             font_size=18,
-            font_name="Roboto"
+            font_name="Roboto",
+            bold=True
         )
         self.entry_name.bind(size=self.entry_name.setter('text_size'))
 
@@ -60,7 +61,8 @@ class ItemWidget(BoxLayout):
             valign='middle',
             color=self.secondary_color, 
             font_size=18,
-            font_name="Roboto"
+            font_name="Roboto",
+            bold=True
         )
         self.entry_number.bind(size=self.entry_number.setter('text_size'))
 
@@ -175,7 +177,8 @@ class HomePage(BoxLayout):
             text='New', 
             size_hint=(0.1, 0.1), 
             background_color=(0, 0, 0, 0),  # Light green background
-            color=(0.133, 0.545, 0.133, 1)  # Green text
+            color=(0.133, 0.545, 0.133, 1),  # Green text
+            bold=True
         )
         new_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}
         new_button.bind(on_press=self.new_entry)
