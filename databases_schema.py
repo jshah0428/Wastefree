@@ -37,3 +37,25 @@ def saved_recipes_db():
     ''')
     connection.commit()
     connection.close()
+
+
+def pantry_database():
+    connection = sqlite3.connect(db_connect)
+    cursor = connection.cursor()
+    cursor.execute('''
+    CREATE TABLE pantry (
+        id INTEGER PRIMARY KEY,
+        item_name TEXT,
+        quantity INTEGER,
+        unit_price REAL,
+        total_price REAL,
+        purchase_date DATE,
+        expiry_date DATE,
+        consumed INTEGER DEFAULT 0,  -- 1 if consumed, 0 if wasted
+        wasted INTEGER DEFAULT 0,     -- 1 if wasted, 0 if not
+        FOREIGN KEY (ID) REFERENCES user(id)
+    );
+    
+    ''')
+    connection.commit()
+    connection.close()
