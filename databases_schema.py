@@ -1,6 +1,6 @@
 import sqlite3
 
-db_connect = '/Users/jainamshah/PycharmProjects/Wastefree/recipe.db'
+db_connect = '/Users/shreyaskonanki/PycharmProjects/Wastefree/recipe.db'
 
 def initialize_accounts_database():
     connection = sqlite3.connect(db_connect)
@@ -44,7 +44,7 @@ def pantry_database():
     cursor = connection.cursor()
     cursor.execute('''
     CREATE TABLE IF NOT EXISTS pantry (
-        id INTEGER PRIMARY KEY,
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
         item_name TEXT,
         quantity INTEGER,
         unit_price REAL,
