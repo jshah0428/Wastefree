@@ -18,15 +18,6 @@ from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 
 
-# Recipe Finder Imports
-from bs4 import BeautifulSoup
-
-from PIL import Image
-from io import BytesIO
-
-from kivymd.uix.boxlayout import MDBoxLayout
-import databases_schema as dbs
-
 
 Window.size = (325, 600)
 #Window.clearcolor = (1, 1, 1, 1)  # White background
@@ -165,12 +156,31 @@ class NavBar(BoxLayout):
         scan.bind(on_press=self.switch_to_scan_page)
         
         account = Button(background_normal='images/account.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+        account.bind(on_press=self.logout)
 
         self.add_widget(pantry)
         self.add_widget(trends)
         self.add_widget(recipes)
         self.add_widget(scan)
         self.add_widget(account)
+
+    # Upon activation of this function a popup will appear with a button saying "Logout", when pressed
+    # the application will terminate 
+    def logout(self, instance):
+        layout = BoxLayout(orientation='vertical', padding=10, spacing=10)
+        layout.add_widget(Label(text='Are you sure you want to logout?', halign='center', valign='middle', color=(0.133, 0.545, 0.133, 1)))
+
+        logout_button = Button(text='Logout', size_hint=(1, 0.2), background_color=(0.133, 0.545, 0.133, 1))
+        logout_button.bind(on_press=lambda x: self.terminate_app())
+        layout.add_widget(logout_button)
+
+        popup = Popup(title='Logout', content=layout, size_hint=(0.8, 0.5))
+        popup.open()
+
+    def terminate_app(self):
+        App.get_running_app().stop()
+        Window.close()
+
 
     def switch_to_home_page(self, instance):
         self.parent.parent.manager.current = 'home_page'
@@ -445,8 +455,6 @@ class RecipesScreen(Screen):
 class MyApp(App):
     def build(self):
         sm = ScreenManager(transition=NoTransition())
-
-        dbs.initialize_accounts_database()
 
         sm.add_widget(HomeScreen(name='home_page'))
         sm.add_widget(TrendsScreen(name='trends_page'))
