@@ -5,7 +5,7 @@ from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 
-with open('../priv.json', 'r') as file:
+with open('../private_stuff.json', 'r') as file:
     info = json.load(file)
     pw = info['apikey']
 
