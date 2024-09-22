@@ -147,6 +147,8 @@ class HomePage(BoxLayout):
             color=(0.133, 0.545, 0.133, 1)  # Green text
         )
         new_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}
+        new_button.bind(on_press=self.new_entry)
+
         self.add_widget(new_button)
 
         # Scrollable Frame
@@ -165,8 +167,12 @@ class HomePage(BoxLayout):
         nav_bar = BoxLayout(orientation='horizontal', size_hint_y=None, height=50, padding=[45, 0], spacing=20)
 
         pantry = Button(background_normal='images/pantry.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+       
         trends = Button(background_normal='images/trends.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+        trends.bind(on_press=self.switch_to_new_page)
+        
         recipes = Button(background_normal='images/recipes.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+       
         account = Button(background_normal='images/account.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
 
         nav_bar.add_widget(pantry)
@@ -230,6 +236,11 @@ class HomePage(BoxLayout):
         # print(self.parent.manager)
         self.parent.manager.current = 'new_page'
 
+class HomeScreen(Screen):
+    def __init__(self, **kwargs):
+        super(HomeScreen, self).__init__(**kwargs)
+        self.add_widget(HomePage())
+
 # Page Management 
 class NewPage(BoxLayout):
     def __init__(self, **kwargs):
@@ -248,22 +259,34 @@ class NewPage(BoxLayout):
     def switch_to_home_page(self, instance):
         self.parent.manager.current = 'home_page'
 
+class NewScreen(Screen):
+    def __init__(self, **kwargs):
+        super(NewScreen, self).__init__(**kwargs)
+        self.add_widget(Button(text='New Page'))
+
 
 class MyApp(App):
     def build(self):
         sm = ScreenManager()
 
-        home_page = HomePage()
-        screen_home = Screen(name='home_page')
-        screen_home.add_widget(home_page)
-        sm.add_widget(screen_home)
-
-        new_page = NewPage()
-        screen_new = Screen(name='new_page')
-        screen_new.add_widget(new_page)
-        sm.add_widget(screen_new)
+        sm.add_widget(HomeScreen(name='home_page'))
+        sm.add_widget(NewScreen(name='new_page'))
 
         return sm
+    # def build(self):
+        # sm = ScreenManager()
+
+        # home_page = HomePage()
+        # screen_home = Screen(name='home_page')
+        # screen_home.add_widget(home_page)
+        # sm.add_widget(screen_home)
+
+        # new_page = NewPage()
+        # screen_new = Screen(name='new_page')
+        # screen_new.add_widget(new_page)
+        # sm.add_widget(screen_new)
+
+        # return sm
 
 
 if __name__ == '__main__':
