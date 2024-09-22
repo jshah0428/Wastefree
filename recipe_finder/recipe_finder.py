@@ -1,5 +1,6 @@
 from kivy.lang import Builder
 from kivy.uix.screenmanager import Screen, ScreenManager
+from kivy.utils import get_color_from_hex
 from kivymd.app import MDApp
 from kivymd.uix.list import MDList, OneLineListItem
 from kivymd.uix.scrollview import MDScrollView
@@ -16,14 +17,31 @@ import sqlite3
 from kivymd.uix.boxlayout import MDBoxLayout
 import databases_schema as dbs
 
+class GreenOneLineListItem(OneLineListItem):
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.bg_color = [0.133, 0.545, 0.133, 0.3] # Green background
+        self.text_color = get_color_from_hex("#FFFFFF")  # White text
+        self.font_style = "H6"
+
 KV = '''
 ScreenManager:
     SearchScreen:
     RecipeListScreen:
     RecipeDetailScreen:
 
+<GreenOneLineListItem@OneLineListItem>:
+    bg_color: 0.133, 0.545, 0.133, 1  # Green background
+    theme_text_color: "Custom"
+    text_color: 1, 1, 1, 1  # White text
+
 <SearchScreen>:
     name: 'search'
+    Image:
+        source: '/Users/jainamshah/PycharmProjects/Wastefree/login/BackgroundPic.png'
+        allow_stretch: True
+        keep_ratio: False
+
     MDBoxLayout:
         orientation: 'vertical'
         spacing: 10
@@ -32,6 +50,8 @@ ScreenManager:
             text: "Saved Recipes"
             on_release: app.display_saved_recipes()
             pos_hint: {"center_x": .5}
+            md_bg_color: 0.133, 0.545, 0.133, 1  # Green background (RGBA)
+            text_color: 1, 1, 1, 1   # White text (RGBA)
 
         MDScrollView:
             size_hint_y: 0.3  # Adjust this value to control the height of the scroll area
@@ -41,6 +61,8 @@ ScreenManager:
         MDTopAppBar:
             title: "Recipe Search"
             elevation: 10
+            md_bg_color: 0.133, 0.545, 0.133, 1  # green background (RGBA)
+            text_color: 1, 1, 1, 1   # White text (RGBA)
 
         MDTextField:
             id: search_field
@@ -49,27 +71,44 @@ ScreenManager:
             size_hint_x: None
             width: "300dp"
             pos_hint: {"center_x": .5}
+            line_color_normal: 0.133, 0.545, 0.133, 1  # Green border color
+            line_color_focus: 0.133, 0.545, 0.133, 1  # Green border color when focused
+            text_color_normal: 0.133, 0.545, 0.133, 1  # Green text color
+            text_color_focus: 0.133, 0.545, 0.133, 1  # Green text color when focused
+            hint_text_color_normal: 0.133, 0.545, 0.133, 0.7  # Green hint text color (slightly transparent)
+            hint_text_color_focus: 0.133, 0.545, 0.133, 0.7  # Green hint text color when focused
 
         MDRaisedButton:
             text: "Search Recipes"
             pos_hint: {"center_x": .5}
             on_release: app.search_recipes()
+            md_bg_color: 0.133, 0.545, 0.133, 1  # Green background (RGBA)
+            text_color: 1, 1, 1, 1   # White text (RGBA)
 <RecipeListScreen>:
     name: 'recipe_list'
+    Image:
+        source: '/Users/jainamshah/PycharmProjects/Wastefree/login/BackgroundPic.png'
+        allow_stretch: True
+        keep_ratio: False
     MDBoxLayout:
         orientation: 'vertical'
 
         MDTopAppBar:
             title: "Recipe List"
             left_action_items: [["arrow-left", lambda x: app.switch_screen('search')]]
+            md_bg_color: 0.133, 0.545, 0.133, 1  # green background (RGBA)
+            text_color: 1, 1, 1, 1   # White text (RGBA)
+            
         MDLabel:
             id: save_message
             text: ""
             halign: "center"
             theme_text_color: "Custom"
-            text_color: 0, 1, 0, 1  # Green color for success message
+            md_bg_color: 0.133, 0.545, 0.133, 1  # Red background (RGBA)
+            text_color: 1, 1, 1, 1   # White text (RGBA)
             size_hint_y: None
             height: self.texture_size[1]
+            
 
         MDScrollView:
             MDList:
@@ -82,6 +121,8 @@ ScreenManager:
 
         MDTopAppBar:
             title: "Recipe Details"
+            md_bg_color: 0.133, 0.545, 0.133, 1  # Red background (RGBA)
+            text_color: 1, 1, 1, 1   # White text (RGBA)
             left_action_items: [["arrow-left", lambda x: app.switch_screen('recipe_list')]]
 
         MDScrollView:
@@ -102,6 +143,8 @@ ScreenManager:
                 MDRaisedButton:
                     id: recipe_link
                     text: "View Original Recipe"
+                    md_bg_color: 0.133, 0.545, 0.133, 1  # green background (RGBA)
+                    text_color: 1, 1, 1, 1   # White text (RGBA)
                     pos_hint: {"center_x": .5}
                     on_release: app.open_recipe_link()
 
@@ -158,7 +201,7 @@ class RecipeDetailScreen(Screen):
 
 class RecipeApp(MDApp):
     def build(self):
-        self.theme_cls.theme_style = "Dark"
+        self.theme_cls.theme_style = "Light"
         self.current_recipe_url = None
         return Builder.load_string(KV)
 
@@ -190,18 +233,17 @@ class RecipeApp(MDApp):
 
             if saved_recipes:
                 for recipe in saved_recipes:
-                    item = OneLineListItem(
+                    item = GreenOneLineListItem(
                         text=recipe[0],
                         on_release=lambda x, url=recipe[1]: webbrowser.open(url)
                     )
                     saved_recipes_list.add_widget(item)
             else:
-                saved_recipes_list.add_widget(OneLineListItem(text="No saved recipes"))
+                saved_recipes_list.add_widget(GreenOneLineListItem(text="No saved recipes"))
         else:
-            saved_recipes_list.add_widget(OneLineListItem(text="No saved recipes"))
+            saved_recipes_list.add_widget(GreenOneLineListItem(text="No saved recipes"))
 
         connection.close()
-
 
 
 
@@ -312,12 +354,12 @@ class RecipeApp(MDApp):
             box_layout = MDBoxLayout(orientation='horizontal', size_hint_y=None, height='48dp')
 
             # Create the recipe list item (OneLineListItem)
-            item = OneLineListItem(text=recipe['name'], on_release=lambda x, r=recipe: self.show_recipe_detail(r))
+            item = GreenOneLineListItem(text=recipe['name'], on_release=lambda x, r=recipe: self.show_recipe_detail(r))
 
             # Create the green "Save" button
             save_button = MDRaisedButton(
                 text="Save",
-                md_bg_color=[0, 1, 0, 1],  # Green background color (RGBA format)
+                md_bg_color= (0.133, 0.545, 0.133, 1),  # Green background color (RGBA format)
                 on_release=lambda x, r=recipe: self.save_recipe(r)  # Call save method when pressed
             )
 

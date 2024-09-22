@@ -1,14 +1,22 @@
 from mindee import Client, PredictResponse, product
 from images import FileChooserWindow
+import json
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
+
+with open('../priv.json', 'r') as file:
+    info = json.load(file)
+    pw = info['apikey']
 
 def api_output(image_path):
-    mindee_client = Client(api_key="ddba2762d0498b588f315b690c7746d4")
+    mindee_client = Client(api_key=pw)
     input_doc = mindee_client.source_from_path(image_path)
     result: PredictResponse = mindee_client.parse(product.ReceiptV5, input_doc)
     output = result.document
     return output
 
-def process_receipt(image_path):
+def process_receipt(image_path, self=None):
     print("Processing image:", image_path)
     out = str(api_output(image_path))
     half = []
@@ -65,10 +73,15 @@ def process_receipt(image_path):
     for i in range(len(unit_prices)):
         unit_prices[i] = float(unit_prices[i])
 
+    data = [item_names, qty, total_prices, unit_prices]
     print(item_names)
     print(qty)
     print(total_prices)
     print(unit_prices)
+    return data
+
+
+    #db_connect = '/Users/jainamshah/PycharmProjects/Wastefree/recipe.db'
 
 
 if __name__ == "__main__":
