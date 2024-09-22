@@ -1,5 +1,9 @@
-from datetime import datetime 
+from datetime import datetime
+
+from login import loginbackend
 from recieptScanner import process_receipt
+import sqlite3
+import databases_schema as dbs
 
 # Kivy Imports
 from kivy.app import App
@@ -47,8 +51,9 @@ class ItemWidget(BoxLayout):
             halign='left', 
             valign='middle',
             color=self.primary_color, 
-            font_size=18,
-            font_name="Roboto"
+            font_size=34,
+            font_name="Roboto",
+            bold = "True",
         )
         self.entry_name.bind(size=self.entry_name.setter('text_size'))
 
@@ -128,7 +133,7 @@ class NavBar(BoxLayout):
         self.padding = [40, 0]
         self.spacing = 10
 
-        pantry = Button(background_normal='images/pantry.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+        pantry = Button(background_normal='images/pantry.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1), font_size=40)
         pantry.bind(on_press=self.switch_to_home_page)
 
         trends = Button(background_normal='images/trends.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
@@ -167,15 +172,17 @@ class HomePage(BoxLayout):
         self.orientation = 'vertical'
 
         # Header Label
-        header = Label(text='Pantry', font_size=24, size_hint_y=None, bold=True, color=(0, 0.545, 0.137, 1))  # Green text
+        header = Label(text='Pantry', font_size=40, size_hint_y=None, bold=True, color=(0, 0.545, 0.137, 1))  # Green text
         self.add_widget(header)
 
         # New Button
         new_button = Button(
-            text='New', 
+            text='New',
+            font_size=34,
             size_hint=(0.1, 0.1), 
             background_color=(0, 0, 0, 0),  # Light green background
-            color=(0.133, 0.545, 0.133, 1)  # Green text
+            color=(0.133, 0.545, 0.133, 1) , # Green text
+            bold=True
         )
         new_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}
         new_button.bind(on_press=self.new_entry)
@@ -187,9 +194,9 @@ class HomePage(BoxLayout):
         scroll_layout = GridLayout(cols=1, spacing=10, size_hint_y=None)
         scroll_layout.bind(minimum_height=scroll_layout.setter('height'))
 
-        for i in range(10):  # Example list entries
-            entry = ItemWidget(f'Item {i+1}', f'{i}', i)
-            scroll_layout.add_widget(entry)
+        # for i in range(10):  # Example list entries
+            # entry = ItemWidget(f'Item {i+1}', f'{i}', i)
+            # scroll_layout.add_widget(entry)
 
         scroll_view.add_widget(scroll_layout)
         self.add_widget(scroll_view)
@@ -197,7 +204,27 @@ class HomePage(BoxLayout):
         self.NavBar = NavBar()
         self.add_widget(self.NavBar)
 
+        connection = sqlite3.connect('/Users/jainamshah/PycharmProjects/Wastefree/recipe.db')
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT COUNT(*) FROM pantry;")
+        row_count = cursor.fetchone()[0]
+        if row_count != 0:
+            cursor.execute("""
+                SELECT item_name, quantity, expiry_date, total_price
+                FROM pantry
+            """,)
+
+            results = cursor.fetchall()  # Fetch all results
+
+
+            for x in range(len(results)):
+                new_item = ItemWidget(str(results[x][0]), str(results[x][1]), str(results[x][2]), str(results[x][3]))
+                self.children[1].children[0].add_widget(new_item)
+
     def new_entry(self, instance):
+
+
         layout = BoxLayout(orientation='vertical')
 
         name_input = TextInput(hint_text='Name', multiline=False, padding_y=(20,20),
@@ -212,7 +239,7 @@ class HomePage(BoxLayout):
                              size_hint=(1, 0.5))
         layout.add_widget(expire_input)
 
-        avgCost_input = TextInput(hint_text='Average Cost', multiline=False, padding_y=(20,20),
+        avgCost_input = TextInput(hint_text='Unit Cost', multiline=False, padding_y=(20,20),
                              size_hint=(1, 0.5))
         layout.add_widget(avgCost_input)
 
@@ -221,13 +248,23 @@ class HomePage(BoxLayout):
             quantity = quantity_input.text
             expire_date = datetime.strptime(expire_input.text, '%m/%d/%Y')
             expire = int(datetime(expire_date.year, expire_date.month, expire_date.day).timestamp())
-            avgCost = float(avgCost_input.text)
+            avgCost = float(avgCost_input.text) #supposed to be unit cost
+            totalCost = avgCost*float(quantity)
 
-            foodId = 00000 # Convert
-            individualID = 000000 # Convert
-            
-            new_item = ItemWidget(name, quantity, foodId, individualID, expire, avgCost)
+            new_item = ItemWidget(name, quantity, expire, avgCost)
             self.children[1].children[0].add_widget(new_item)
+
+            dbs.pantry_database()
+            connection = sqlite3.connect('/Users/jainamshah/PycharmProjects/Wastefree/recipe.db')
+            cursor = connection.cursor()
+
+            cursor.execute('''
+            INSERT INTO pantry (item_name, quantity, unit_price, total_price, expiry_date)
+            VALUES (?, ?, ?, ?, ?)
+            ''', (name, quantity, avgCost, totalCost, expire_date))
+
+            connection.commit()
+            connection.close()
 
             # ADD TO DATABASE
             popup.dismiss()
@@ -273,7 +310,7 @@ class ScannerPage(BoxLayout):
         self.orientation = 'vertical'
 
         # Header Label
-        header = Label(text='Receipt Scanner', bold=True, size_hint_y=None, height=50)
+        header = Label(text='Receipt Scanner', bold=True, size_hint_y=None, height=50, color=(0, 0.545, 0.137, 1))
         self.add_widget(header)
 
         # FileChooser
@@ -319,7 +356,7 @@ class ItemAdderPage(BoxLayout):
         self.receipt_data = receipt_data
 
         # Header Label
-        header = Label(text='Return to pantry', size_hint_y=None, height=50)
+        header = Label(text='Return to pantry', size_hint_y=None, height=50, color=(0, 0.545, 0.137, 1), on_press=self.return_to_pantry )
         self.add_widget(header)
     
         for i in range(len(receipt_data[0])):
@@ -327,7 +364,8 @@ class ItemAdderPage(BoxLayout):
 
         self.add_widget(NavBar())
 
-
+    def return_to_pantry(self, instance):
+        self.parent.parent.manager.current = 'HomePage'  # Navigate to the home page
     def show_popup(self, index):
         layout = GridLayout(cols=2, padding=10)
 
@@ -335,6 +373,7 @@ class ItemAdderPage(BoxLayout):
         quantity_input = TextInput(text=str(self.receipt_data[1][index]))
         expiration_input = TextInput(text=str(self.receipt_data[2][index]))
         unit_cost_input = TextInput(text=str(self.receipt_data[3][index]))
+        total_price = float(str(self.receipt_data[3][index]))*int(str(self.receipt_data[1][index]))
 
         layout.add_widget(Label(text='Name:'))
         layout.add_widget(name_input)
@@ -344,6 +383,7 @@ class ItemAdderPage(BoxLayout):
         layout.add_widget(expiration_input)
         layout.add_widget(Label(text='Unit Cost:'))
         layout.add_widget(unit_cost_input)
+
 
         button_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height=50)
         
@@ -359,7 +399,20 @@ class ItemAdderPage(BoxLayout):
         popup.open()
 
         def add_item(index):
-            # Logic to add the item
+            expire_date = datetime.strptime(expiration_input.text, '%m/%d/%Y')
+
+            dbs.pantry_database()
+            connection = sqlite3.connect('/Users/jainamshah/PycharmProjects/Wastefree/recipe.db')
+            cursor = connection.cursor()
+
+
+            cursor.execute('''
+                    INSERT INTO pantry (item_name, quantity, unit_price, total_price, expiry_date)
+                    VALUES (?, ?, ?, ?, ?)
+                    ''', (str(name_input.text), int(quantity_input.text), float(unit_cost_input.text), total_price, expire_date))
+
+            connection.commit()
+            connection.close()
             popup.dismiss()
             
         def remove_item():
