@@ -129,11 +129,19 @@ class ItemWidget(BoxLayout):
         popup = Popup(title='Item Information', content=layout, size_hint=(0.8, 0.5))
         popup.open()
 
-
+#Creme color background
+Window.clearcolor = (1, 0.94, 0.85, 1)
 class HomePage(BoxLayout):
     def __init__(self, **kwargs):
         super(HomePage, self).__init__(**kwargs)
         self.orientation = 'vertical'
+
+        # Add a background image/Triangle for mobile view around New Button
+        # with self.canvas.before:
+        #    Color(0.133, 0.545, 0.133, 1) 
+        #    Line(points=[150, 650, 250, 650, 200, 575, 150, 650], width=2)
+        #   self.bg = Image(source='login/BackgroundPic.png', allow_stretch=True, keep_ratio=False)
+        #   self.bind(size=self._update_bg)
 
         # Header Label
         header = Label(text='Pantry', font_size=24, size_hint_y=None, bold=True, color=(0, 0.545, 0.137, 1))  # Green text
@@ -181,6 +189,11 @@ class HomePage(BoxLayout):
         nav_bar.add_widget(account)
 
         self.add_widget(nav_bar)
+
+    # Add background image
+    #def _update_bg(self, *args):
+    #   self.bg.size = self.sizee
+    #   self.bg.pos = self.pos
 
     def new_entry(self, instance):
         layout = BoxLayout(orientation='vertical')
