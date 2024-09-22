@@ -43,7 +43,7 @@ def pantry_database():
     connection = sqlite3.connect(db_connect)
     cursor = connection.cursor()
     cursor.execute('''
-    CREATE TABLE pantry (
+    CREATE TABLE IF NOT EXISTS pantry (
         id INTEGER PRIMARY KEY,
         item_name TEXT,
         quantity INTEGER,
