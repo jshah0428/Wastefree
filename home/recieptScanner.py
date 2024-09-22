@@ -1,7 +1,14 @@
+import json
 from mindee import Client, PredictResponse, product
 
+
+def get_api_key():
+    with open('../secrets.json', 'r') as file:
+        secrets = json.load(file)
+    return secrets['mindeeReceipt']
+
 def api_output(image_path):
-    mindee_client = Client(api_key="ddba2762d0498b588f315b690c7746d4")
+    mindee_client = Client(get_api_key())
     input_doc = mindee_client.source_from_path(image_path)
     result: PredictResponse = mindee_client.parse(product.ReceiptV5, input_doc)
     output = result.document
