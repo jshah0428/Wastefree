@@ -10,7 +10,7 @@ import databases_schema as dbs
 import subprocess
 
 # Path to your SQLite database file
-DATABASE_NAME = '../recipe.db'
+DATABASE_NAME = '/Users/jainamshah/PycharmProjects/Wastefree/recipe.db'
 
 def is_valid_username(username):
     # Username must be 3-20 characters long and can contain letters, numbers, underscores, and periods
@@ -62,7 +62,8 @@ class LoginScreen(Screen):
                     print('Login successful!')
 
                     # Run recipe_finder.py as a subprocess
-                    #subprocess.Popen(['python3', '/Users/jainamshah/PycharmProjects/Wastefree/recipe_finder/recipe_finder.py'])
+                    subprocess.Popen(['python3', '/Users/jainamshah/PycharmProjects/Wastefree/recipe_finder/recipe_finder.py'])
+
                     # Alternatively, use 'python' if your system doesn't use 'python3'
                 else:
                     self.feedback = 'Invalid username or password.'
