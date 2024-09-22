@@ -1,6 +1,6 @@
 import sqlite3
 
-db_connect = '/Users/jainamshah/PycharmProjects/Wastefree/recipe.db'
+db_connect = '/Users/shreyaskonanki/PycharmProjects/Wastefree/recipe.db'
 
 def initialize_accounts_database():
     connection = sqlite3.connect(db_connect)

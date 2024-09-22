@@ -17,6 +17,7 @@ import sqlite3
 from kivymd.uix.boxlayout import MDBoxLayout
 import databases_schema as dbs
 
+
 class GreenOneLineListItem(OneLineListItem):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -217,7 +218,7 @@ class RecipeApp(MDApp):
         self.display_recipe_list(recipes)
 
     def display_saved_recipes(self):
-        connection = sqlite3.connect('/Users/jainamshah/PycharmProjects/Wastefree/recipe.db')
+        connection = sqlite3.connect('/Users/shreyaskonanki/PycharmProjects/Wastefree/recipe.db')
         cursor = connection.cursor()
 
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='SAVED_RECIPES'")
@@ -409,7 +410,7 @@ class RecipeApp(MDApp):
     def save_recipe(self, recipe):
 
         dbs.saved_recipes_db()
-        connection = sqlite3.connect('/Users/jainamshah/PycharmProjects/Wastefree/recipe.db')
+        connection = sqlite3.connect('/Users/shreyaskonanki/PycharmProjects/Wastefree/recipe.db')
         cursor = connection.cursor()
 
         # Convert list values to strings

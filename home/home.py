@@ -19,7 +19,7 @@ from kivy.core.window import Window
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.config import Config
-from kivy.graphics import Color, Line
+from kivy.graphics import Color, Line, Rectangle
 
 Window.size = (325, 600)
 Window.clearcolor = (1, 0.94, 0.85, 1)
@@ -65,7 +65,8 @@ class ItemWidget(BoxLayout):
             valign='middle',
             color=self.secondary_color, 
             font_size=18,
-            font_name="Roboto"
+            font_name="Roboto",
+            bold=True
         )
         self.entry_number.bind(size=self.entry_number.setter('text_size'))
 
@@ -181,9 +182,22 @@ class HomePage(BoxLayout):
             font_size=34,
             size_hint=(0.1, 0.1), 
             background_color=(0, 0, 0, 0),  # Light green background
-            color=(0.133, 0.545, 0.133, 1) , # Green text
+
+            color=(0.133, 0.545, 0.133, 1),  # Green text
             bold=True
         )
+        
+        def on_button_press(instance):
+            with instance.canvas.before:
+                Color(0, 0, 0, 0.3)  # Semi-transparent shadow color
+                self.shadow = Rectangle(size=(instance.size[0] * 1.1, instance.size[1] * 1.1), pos=(instance.pos[0] - 5, instance.pos[1] - 5))
+
+        def on_button_release(instance):
+            instance.canvas.before.clear()
+
+        new_button.bind(on_press=on_button_press)
+        new_button.bind(on_release=on_button_release)
+
         new_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}
         new_button.bind(on_press=self.new_entry)
 
@@ -292,9 +306,22 @@ class TrendsPage(BoxLayout):
         self.orientation = 'vertical'
 
         # Header Label
-        header = Label(text='Trends Page', size_hint_y=None, height=50)
+        header = Label(
+            text='Trends Page',
+            size_hint_y=None,
+            height=50,
+            color=(0.0, 0.5, 0.0, 1)  # Dark green (RGBA)
+        )
         self.add_widget(header)
 
+        # Add the image (assuming you know the path)
+        image_path = '../waste_price_plot.png'  # Replace with your actual file path
+        image = Image(
+            source=image_path,
+            size_hint=(1.0, 1.0),  # Slightly larger image (default is 1.0)
+            pos_hint={'center_x': 0.5, 'top': 0.9},  # Move higher (closer to the top)
+        )
+        self.add_widget(image)
         
         self.add_widget(NavBar())
 
