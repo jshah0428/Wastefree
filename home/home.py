@@ -1,4 +1,5 @@
 from datetime import datetime 
+from recieptScanner import process_receipt
 
 # Kivy Imports
 from kivy.app import App
@@ -6,9 +7,10 @@ from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
 from kivy.uix.image import Image
+from kivy.uix.filechooser import FileChooserIconView
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
-from kivy.uix.screenmanager import ScreenManager, Screen
+from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.core.window import Window
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
@@ -16,12 +18,13 @@ from kivy.config import Config
 from kivy.graphics import Color, Line
 
 Window.size = (325, 600)
-Window.clearcolor = (1, 1, 1, 1)  # White background
+#Window.clearcolor = (1, 1, 1, 1)  # White background
+#Creme color background
+Window.clearcolor = (1, 0.94, 0.85, 1)
 
 #TODO
 # - FIX THE UI DOING THAT
 # - Fix the UI so it doesnt look stupid
-# - Add functionality to buttons
 # - Load from data base function
 # - To handle item removals/update what we need to do is 
 #   make sure that the item is updated in the data base first,
@@ -129,8 +132,50 @@ class ItemWidget(BoxLayout):
         popup = Popup(title='Item Information', content=layout, size_hint=(0.8, 0.5))
         popup.open()
 
-#Creme color background
-Window.clearcolor = (1, 0.94, 0.85, 1)
+class NavBar(BoxLayout):
+    def __init__(self, **kwargs):
+        super(NavBar, self).__init__(**kwargs)
+        self.orientation = 'horizontal'
+        self.size_hint_y = None
+        self.height = 50
+        self.padding = [40, 0]
+        self.spacing = 10
+
+        pantry = Button(background_normal='images/pantry.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+        pantry.bind(on_press=self.switch_to_home_page)
+
+        trends = Button(background_normal='images/trends.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+        trends.bind(on_press=self.switch_to_trends_page)
+
+        recipes = Button(background_normal='images/recipes.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+        recipes.bind(on_press=self.switch_to_recipes_page)
+        
+        scan = Button(background_normal='images/scan.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+        scan.bind(on_press=self.switch_to_scan_page)
+        
+        account = Button(background_normal='images/account.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
+
+        self.add_widget(pantry)
+        self.add_widget(trends)
+        self.add_widget(recipes)
+        self.add_widget(scan)
+        self.add_widget(account)
+
+    def switch_to_home_page(self, instance):
+        self.parent.parent.manager.current = 'home_page'
+    
+    def switch_to_trends_page(self, instance):
+        self.parent.parent.manager.current = 'trends_page'
+    
+    def switch_to_recipes_page(self, instance):
+        self.parent.parent.manager.current = 'recipes_page'
+    
+    def switch_to_scan_page(self, instance):
+        self.parent.parent.manager.current = 'scan_page'
+
+# Home Page
+
+
 class HomePage(BoxLayout):
     def __init__(self, **kwargs):
         super(HomePage, self).__init__(**kwargs)
@@ -171,24 +216,9 @@ class HomePage(BoxLayout):
         scroll_view.add_widget(scroll_layout)
         self.add_widget(scroll_view)
 
-        # Navigation Bar
-        nav_bar = BoxLayout(orientation='horizontal', size_hint_y=None, height=50, padding=[45, 0], spacing=20)
+        self.NavBar = NavBar()
+        self.add_widget(self.NavBar)
 
-        pantry = Button(background_normal='images/pantry.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
-       
-        trends = Button(background_normal='images/trends.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
-        trends.bind(on_press=self.switch_to_new_page)
-        
-        recipes = Button(background_normal='images/recipes.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
-       
-        account = Button(background_normal='images/account.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
-
-        nav_bar.add_widget(pantry)
-        nav_bar.add_widget(trends)
-        nav_bar.add_widget(recipes)
-        nav_bar.add_widget(account)
-
-        self.add_widget(nav_bar)
 
     # Add background image
     #def _update_bg(self, *args):
@@ -231,7 +261,6 @@ class HomePage(BoxLayout):
             popup.dismiss()
 
 
-
         add_button = Button(text='Add',
                              size_hint=(1, 0.5))
         add_button.bind(on_press=add_item)
@@ -242,64 +271,165 @@ class HomePage(BoxLayout):
               size_hint=(0.8, 0.8))
         popup.open()
   
-    
-    def switch_to_new_page(self, instance):
-        # print("we got something")
-        # print(self.parent)
-        # print(self.parent.manager)
-        self.parent.manager.current = 'new_page'
-
 class HomeScreen(Screen):
     def __init__(self, **kwargs):
         super(HomeScreen, self).__init__(**kwargs)
         self.add_widget(HomePage())
 
-# Page Management 
-class NewPage(BoxLayout):
+# Trends Page
+class TrendsPage(BoxLayout):
     def __init__(self, **kwargs):
-        super(NewPage, self).__init__(**kwargs)
+        super(TrendsPage, self).__init__(**kwargs)
         self.orientation = 'vertical'
 
         # Header Label
-        header = Label(text='New Page', size_hint_y=None, height=50)
+        header = Label(text='Trends Page', size_hint_y=None, height=50)
         self.add_widget(header)
 
-        # Back Button
-        back_button = Button(text='Back', size_hint_y=None, height=50)
-        back_button.bind(on_press=self.switch_to_home_page)
-        self.add_widget(back_button)
+        
+        self.add_widget(NavBar())
 
-    def switch_to_home_page(self, instance):
-        self.parent.manager.current = 'home_page'
-
-class NewScreen(Screen):
+class TrendsScreen(Screen):
     def __init__(self, **kwargs):
-        super(NewScreen, self).__init__(**kwargs)
-        self.add_widget(Button(text='New Page'))
+        super(TrendsScreen, self).__init__(**kwargs)
+        self.add_widget(TrendsPage())
 
+# Scanner Page
+class ScannerPage(BoxLayout):
+    def __init__(self, **kwargs):
+        Window.clearcolor = (.2, .2, 0.2, 1) 
+        super(ScannerPage, self).__init__(**kwargs)
+        self.orientation = 'vertical'
+
+        # Header Label
+        header = Label(text='Receipt Scanner', bold=True, size_hint_y=None, height=50)
+        self.add_widget(header)
+
+        # FileChooser
+        intial_path = './reciepts'
+        self.file_chooser = FileChooserIconView( size_hint_y=None, height=500, path=intial_path)
+        
+         
+        self.add_widget(self.file_chooser)
+
+        # Submit Button
+        submit_button = Button(text='Submit', size_hint_y=None, height=50)
+        
+        submit_button.bind(on_press=self.on_submit)
+        self.add_widget(submit_button)
+
+        self.add_widget(NavBar())
+
+    # When submit is pressed, switch to a new page that takes in the ocr data
+    # and prompts the user to confirm the data
+    def on_submit(self, instance):
+        selected_file = self.file_chooser.selection
+        if selected_file:
+            print(f"Selected file: {selected_file[0]}")
+            receipt_data = process_receipt(selected_file[0])
+            
+            # item_adder_screen = ItemAdderScreen(receipt_data, name='item_adder_page')
+            self.parent.manager.add_widget(ItemAdderScreen(receipt_data, name='item_adder_page'))
+            self.parent.manager.current = 'item_adder_page'
+
+        else:
+            print("No file selected")
+
+class ScannerScreen(Screen):
+    def __init__(self, **kwargs):
+        super(ScannerScreen, self).__init__(**kwargs)
+        self.add_widget(ScannerPage())
+
+# Item Adder Page, only appears after file submitted
+class ItemAdderPage(BoxLayout): 
+    def __init__(self, receipt_data, **kwargs):
+        super(ItemAdderPage, self).__init__(**kwargs)
+        self.orientation = 'vertical'
+        self.receipt_data = receipt_data
+
+        # Header Label
+        header = Label(text='Return to pantry', size_hint_y=None, height=50)
+        self.add_widget(header)
+    
+        for i in range(len(receipt_data[0])):
+            self.show_popup(i)
+
+        self.add_widget(NavBar())
+
+
+    def show_popup(self, index):
+        layout = GridLayout(cols=2, padding=10)
+
+        name_input = TextInput(text=self.receipt_data[0][index])
+        quantity_input = TextInput(text=str(self.receipt_data[1][index]))
+        expiration_input = TextInput(text=str(self.receipt_data[2][index]))
+        unit_cost_input = TextInput(text=str(self.receipt_data[3][index]))
+
+        layout.add_widget(Label(text='Name:'))
+        layout.add_widget(name_input)
+        layout.add_widget(Label(text='Quantity:'))
+        layout.add_widget(quantity_input)
+        layout.add_widget(Label(text='Expiration Date:'))
+        layout.add_widget(expiration_input)
+        layout.add_widget(Label(text='Unit Cost:'))
+        layout.add_widget(unit_cost_input)
+
+        button_layout = BoxLayout(orientation='horizontal', size_hint_y=None, height=50)
+        
+        add_button = Button(text='Add')
+        remove_button = Button(text='Remove')
+
+        button_layout.add_widget(add_button)
+        button_layout.add_widget(remove_button)
+
+        layout.add_widget(button_layout)
+
+        popup = Popup(title='Edit Item', content=layout, size_hint=(0.8, 0.8))
+        popup.open()
+
+        def add_item(index):
+            # Logic to add the item
+            popup.dismiss()
+            
+        def remove_item():
+            # Logic to remove the item
+            popup.dismiss()
+        add_button.bind(on_press=lambda x: add_item(index))
+        remove_button.bind(on_press=lambda x: remove_item())   
+        
+class ItemAdderScreen(Screen):
+    def __init__(self, reciept_data, **kwargs):
+        super(ItemAdderScreen, self).__init__(**kwargs)
+        self.add_widget(ItemAdderPage(reciept_data))
+
+# Recipes Page
+class RecipesPage(BoxLayout):
+    def __init__(self, **kwargs):
+        super(RecipesPage, self).__init__(**kwargs)
+        self.orientation = 'vertical'
+
+        # Header Label
+        header = Label(text='Recipes Page', size_hint_y=None, height=50)
+        self.add_widget(header)
+
+        self.add_widget(NavBar())
+
+class RecipesScreen(Screen):
+    def __init__(self, **kwargs):
+        super(RecipesScreen, self).__init__(**kwargs)
+        self.add_widget(RecipesPage())
 
 class MyApp(App):
     def build(self):
-        sm = ScreenManager()
+        sm = ScreenManager(transition=NoTransition())
 
         sm.add_widget(HomeScreen(name='home_page'))
-        sm.add_widget(NewScreen(name='new_page'))
+        sm.add_widget(TrendsScreen(name='trends_page'))
+        sm.add_widget(ScannerScreen(name='scan_page'))
+        
+        # Add widgets for the different screens
 
         return sm
-    # def build(self):
-        # sm = ScreenManager()
-
-        # home_page = HomePage()
-        # screen_home = Screen(name='home_page')
-        # screen_home.add_widget(home_page)
-        # sm.add_widget(screen_home)
-
-        # new_page = NewPage()
-        # screen_new = Screen(name='new_page')
-        # screen_new.add_widget(new_page)
-        # sm.add_widget(screen_new)
-
-        # return sm
 
 
 if __name__ == '__main__':
