@@ -15,7 +15,7 @@ from kivy.core.window import Window
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
 from kivy.config import Config
-from kivy.graphics import Color, Line
+from kivy.graphics import Color, Line, Rectangle
 
 Window.size = (325, 600)
 Window.clearcolor = (1, 0.94, 0.85, 1)
@@ -180,6 +180,18 @@ class HomePage(BoxLayout):
             color=(0.133, 0.545, 0.133, 1),  # Green text
             bold=True
         )
+        
+        def on_button_press(instance):
+            with instance.canvas.before:
+                Color(0, 0, 0, 0.3)  # Semi-transparent shadow color
+                self.shadow = Rectangle(size=(instance.size[0] * 1.1, instance.size[1] * 1.1), pos=(instance.pos[0] - 5, instance.pos[1] - 5))
+
+        def on_button_release(instance):
+            instance.canvas.before.clear()
+
+        new_button.bind(on_press=on_button_press)
+        new_button.bind(on_release=on_button_release)
+
         new_button.pos_hint = {"center_x": 0.5, "center_y": 0.5}
         new_button.bind(on_press=self.new_entry)
 
