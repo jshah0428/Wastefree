@@ -1,11 +1,16 @@
 from mindee import Client, PredictResponse, product
 from images import FileChooserWindow
+import json
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.textinput import TextInput
 
+with open('../priv.json', 'r') as file:
+    info = json.load(file)
+    pw = info['apikey']
+
 def api_output(image_path):
-    mindee_client = Client(api_key="ddba2762d0498b588f315b690c7746d4")
+    mindee_client = Client(api_key=pw)
     input_doc = mindee_client.source_from_path(image_path)
     result: PredictResponse = mindee_client.parse(product.ReceiptV5, input_doc)
     output = result.document
