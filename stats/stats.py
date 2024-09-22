@@ -2,6 +2,8 @@
 import sqlite3
 import matplotlib.pyplot as plt
 import datetime
+import databases_schema as dbs
+
 
 # Define constants
 NUM_DAYS = 15
