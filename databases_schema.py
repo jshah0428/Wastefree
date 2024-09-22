@@ -1,5 +1,6 @@
 import sqlite3
 
+#db_connect = 'C:/Users/busa8/OneDrive/Documents/College Stuff/Hackathons/Kivy Testing/GitHubRepo/Wastefree/recipe.db'
 db_connect = '/Users/jainamshah/PycharmProjects/Wastefree/recipe.db'
 
 def initialize_accounts_database():

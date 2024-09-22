@@ -1,12 +1,14 @@
 from datetime import datetime 
 from recieptScanner import process_receipt
+import subprocess
+import sys
+
 
 # Kivy Imports
 from kivy.app import App
 from kivy.uix.boxlayout import BoxLayout
 from kivy.uix.label import Label
 from kivy.uix.button import Button
-from kivy.uix.image import Image
 from kivy.uix.filechooser import FileChooserIconView
 from kivy.uix.scrollview import ScrollView
 from kivy.uix.gridlayout import GridLayout
@@ -14,8 +16,17 @@ from kivy.uix.screenmanager import ScreenManager, Screen, NoTransition
 from kivy.core.window import Window
 from kivy.uix.popup import Popup
 from kivy.uix.textinput import TextInput
-from kivy.config import Config
-from kivy.graphics import Color, Line
+
+
+# Recipe Finder Imports
+from bs4 import BeautifulSoup
+
+from PIL import Image
+from io import BytesIO
+
+from kivymd.uix.boxlayout import MDBoxLayout
+import databases_schema as dbs
+
 
 Window.size = (325, 600)
 #Window.clearcolor = (1, 1, 1, 1)  # White background
@@ -174,8 +185,6 @@ class NavBar(BoxLayout):
         self.parent.parent.manager.current = 'scan_page'
 
 # Home Page
-
-
 class HomePage(BoxLayout):
     def __init__(self, **kwargs):
         super(HomePage, self).__init__(**kwargs)
@@ -408,26 +417,41 @@ class RecipesPage(BoxLayout):
         super(RecipesPage, self).__init__(**kwargs)
         self.orientation = 'vertical'
 
-        # Header Label
+        # RecipeApp().run()
+        # # Header Label
         header = Label(text='Recipes Page', size_hint_y=None, height=50)
         self.add_widget(header)
+        
+        # Launch RecipeBook Button
+        launch_button = Button(
+            text='Launch RecipeBook',
+            size_hint=(None, None),
+            size=(200, 50),
+            pos_hint={'center_x': 0.5, 'center_y': 0.5}
+        )
+
+        launch_button.bind(on_press=self.launch_recipe_book)
+        self.add_widget(launch_button)
 
         self.add_widget(NavBar())
-
+    def launch_recipe_book(self, instance):
+        subprocess.Popen([sys.executable, '../recipe_finder/recipe_finder.py'])
 class RecipesScreen(Screen):
     def __init__(self, **kwargs):
         super(RecipesScreen, self).__init__(**kwargs)
         self.add_widget(RecipesPage())
 
+
 class MyApp(App):
     def build(self):
         sm = ScreenManager(transition=NoTransition())
 
+        dbs.initialize_accounts_database()
+
         sm.add_widget(HomeScreen(name='home_page'))
         sm.add_widget(TrendsScreen(name='trends_page'))
         sm.add_widget(ScannerScreen(name='scan_page'))
-        
-        # Add widgets for the different screens
+        sm.add_widget(RecipesScreen(name='recipes_page'))        
 
         return sm
 

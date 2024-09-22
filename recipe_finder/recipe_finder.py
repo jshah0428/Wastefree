@@ -38,7 +38,7 @@ ScreenManager:
 <SearchScreen>:
     name: 'search'
     Image:
-        source: '/Users/jainamshah/PycharmProjects/Wastefree/login/BackgroundPic.png'
+        source: '../login/BackgroundPic.png'
         allow_stretch: True
         keep_ratio: False
 
@@ -87,7 +87,7 @@ ScreenManager:
 <RecipeListScreen>:
     name: 'recipe_list'
     Image:
-        source: '/Users/jainamshah/PycharmProjects/Wastefree/login/BackgroundPic.png'
+        source: '../login/BackgroundPic.png'
         allow_stretch: True
         keep_ratio: False
     MDBoxLayout:
@@ -217,7 +217,7 @@ class RecipeApp(MDApp):
         self.display_recipe_list(recipes)
 
     def display_saved_recipes(self):
-        connection = sqlite3.connect('/Users/jainamshah/PycharmProjects/Wastefree/recipe.db')
+        connection = sqlite3.connect('C:/Users/busa8/OneDrive/Documents/College Stuff/Hackathons/Kivy Testing/GitHubRepo/Wastefree/recipe.db')
         cursor = connection.cursor()
 
         cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='SAVED_RECIPES'")
