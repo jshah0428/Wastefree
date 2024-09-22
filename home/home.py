@@ -170,7 +170,7 @@ class HomePage(BoxLayout):
        
         trends = Button(background_normal='images/trends.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
         trends.bind(on_press=self.switch_to_new_page)
-        
+
         recipes = Button(background_normal='images/recipes.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
        
         account = Button(background_normal='images/account.png', size_hint=(None, None), size=(60, 60), background_color=(0.133, 0.545, 0.133, 1))
@@ -231,9 +231,6 @@ class HomePage(BoxLayout):
   
     
     def switch_to_new_page(self, instance):
-        # print("we got something")
-        # print(self.parent)
-        # print(self.parent.manager)
         self.parent.manager.current = 'new_page'
 
 class HomeScreen(Screen):
