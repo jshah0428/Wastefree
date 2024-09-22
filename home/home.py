@@ -255,9 +255,22 @@ class TrendsPage(BoxLayout):
         self.orientation = 'vertical'
 
         # Header Label
-        header = Label(text='Trends Page', size_hint_y=None, height=50)
+        header = Label(
+            text='Trends Page',
+            size_hint_y=None,
+            height=50,
+            color=(0.0, 0.5, 0.0, 1)  # Dark green (RGBA)
+        )
         self.add_widget(header)
 
+        # Add the image (assuming you know the path)
+        image_path = '../waste_price_plot.png'  # Replace with your actual file path
+        image = Image(
+            source=image_path,
+            size_hint=(1.0, 1.0),  # Slightly larger image (default is 1.0)
+            pos_hint={'center_x': 0.5, 'top': 0.9},  # Move higher (closer to the top)
+        )
+        self.add_widget(image)
         
         self.add_widget(NavBar())
 
