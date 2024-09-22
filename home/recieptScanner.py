@@ -3,7 +3,7 @@ from mindee import Client, PredictResponse, product
 
 
 def get_api_key():
-    with open('../secrets.json', 'r') as file:
+    with open('../priv.json', 'r') as file:
         secrets = json.load(file)
     return secrets['mindeeReceipt']
 
