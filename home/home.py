@@ -218,7 +218,7 @@ class HomePage(BoxLayout):
         self.NavBar = NavBar()
         self.add_widget(self.NavBar)
 
-        connection = sqlite3.connect('/Users/jainamshah/PycharmProjects/Wastefree/recipe.db')
+        connection = sqlite3.connect('/Users/shreyaskonanki/PycharmProjects/Wastefree/recipe.db')
         cursor = connection.cursor()
 
         cursor.execute("SELECT COUNT(*) FROM pantry;")
@@ -269,7 +269,7 @@ class HomePage(BoxLayout):
             self.children[1].children[0].add_widget(new_item)
 
             dbs.pantry_database()
-            connection = sqlite3.connect('/Users/jainamshah/PycharmProjects/Wastefree/recipe.db')
+            connection = sqlite3.connect('/Users/shreyaskonanki/PycharmProjects/Wastefree/recipe.db')
             cursor = connection.cursor()
 
             cursor.execute('''
@@ -429,7 +429,7 @@ class ItemAdderPage(BoxLayout):
             expire_date = datetime.strptime(expiration_input.text, '%m/%d/%Y')
 
             dbs.pantry_database()
-            connection = sqlite3.connect('/Users/jainamshah/PycharmProjects/Wastefree/recipe.db')
+            connection = sqlite3.connect('/Users/shreyaskonanki/PycharmProjects/Wastefree/recipe.db')
             cursor = connection.cursor()
 
 

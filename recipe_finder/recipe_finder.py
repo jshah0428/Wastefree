@@ -17,7 +17,6 @@ import sqlite3
 from kivymd.uix.boxlayout import MDBoxLayout
 import databases_schema as dbs
 
-
 class GreenOneLineListItem(OneLineListItem):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
@@ -39,7 +38,7 @@ ScreenManager:
 <SearchScreen>:
     name: 'search'
     Image:
-        source: '/Users/jainamshah/PycharmProjects/Wastefree/login/BackgroundPic.png'
+        source: '../login/BackgroundPic.png'
         allow_stretch: True
         keep_ratio: False
 
@@ -88,7 +87,7 @@ ScreenManager:
 <RecipeListScreen>:
     name: 'recipe_list'
     Image:
-        source: '/Users/jainamshah/PycharmProjects/Wastefree/login/BackgroundPic.png'
+        source: '../login/BackgroundPic.png'
         allow_stretch: True
         keep_ratio: False
     MDBoxLayout:
