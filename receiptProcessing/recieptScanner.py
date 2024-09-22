@@ -1,5 +1,8 @@
 from mindee import Client, PredictResponse, product
 from images import FileChooserWindow
+from kivy.app import App
+from kivy.uix.boxlayout import BoxLayout
+from kivy.uix.textinput import TextInput
 
 def api_output(image_path):
     mindee_client = Client(api_key="ddba2762d0498b588f315b690c7746d4")
@@ -8,7 +11,7 @@ def api_output(image_path):
     output = result.document
     return output
 
-def process_receipt(image_path):
+def process_receipt(image_path, self=None):
     print("Processing image:", image_path)
     out = str(api_output(image_path))
     half = []
@@ -65,10 +68,15 @@ def process_receipt(image_path):
     for i in range(len(unit_prices)):
         unit_prices[i] = float(unit_prices[i])
 
+    data = [item_names, qty, total_prices, unit_prices]
     print(item_names)
     print(qty)
     print(total_prices)
     print(unit_prices)
+    return data
+
+
+    #db_connect = '/Users/jainamshah/PycharmProjects/Wastefree/recipe.db'
 
 
 if __name__ == "__main__":
