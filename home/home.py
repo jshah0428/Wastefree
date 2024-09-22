@@ -230,7 +230,9 @@ class HomePage(BoxLayout):
   
     
     def switch_to_new_page(self, instance):
-        print("we got something")
+        # print("we got something")
+        # print(self.parent)
+        # print(self.parent.manager)
         self.parent.manager.current = 'new_page'
 
 # Page Management 
@@ -249,7 +251,7 @@ class NewPage(BoxLayout):
         self.add_widget(back_button)
 
     def switch_to_home_page(self, instance):
-        self.parent.current = 'home_page'
+        self.parent.manager.current = 'home_page'
 
 class NewScreen(Screen):
     def __init__(self, **kwargs):
