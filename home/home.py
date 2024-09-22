@@ -75,10 +75,10 @@ class ItemWidget(BoxLayout):
         self.entry_number.bind(size=self.entry_number.setter('text_size'))
 
         # Info and Remove Buttons
-        infoButton = Button(size_hint=(None, None), size=(50, 50), background_normal='images/info.png', background_color=(0.133, 0.545, 0.133, 1))
+        infoButton = Button(size_hint=(None, None), size=(50, 50), background_normal='images/info.png', background_color=(0.133, 0.545, 0.133, 1), pos_hint={'center_x': 0.8, 'center_y': 0.5})
         infoButton.bind(on_press=lambda x: self.displayInformation())
         
-        removeButton = Button(size_hint=(None, None), size=(50, 50), background_normal='images/remove.png', background_color=(0.133, 0.545, 0.133, 1))
+        removeButton = Button(size_hint=(None, None), size=(50, 50), background_normal='images/remove.png', background_color=(0.133, 0.545, 0.133, 1), pos_hint={'center_x': 0.8, 'center_y': 0.5})
         removeButton.bind(on_press=lambda x: self.consumeFood())
 
         # Add widgets
